@@ -9,29 +9,31 @@ on:
       - main  # 触发条件：推送到 main 分支时运行
 
 jobs:
-  rclone-job:
-    runs-on: ubuntu-latest  # 运行环境
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        version: [latest, "${{ vars.SPECIFIED_VERSION }}"]
 
     steps:
-      # 检出代码仓库
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # 安装 Rclone
-      - name: Setup Rclone
-        uses: actionshub/setup-rclone@v2
+      - name: Setup Rclone using setup-rclone
+        uses: AnimMouse/setup-rclone@main
         with:
-          rclone-version: stable  # 最新稳定版
-
-      # 配置 Rclone
-      - name: Configure Rclone
-        env:
-          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}  # 使用 GitHub Secret
-        run: |
-          echo "$RCLONE_CONFIG" | base64 -d > ~/.config/rclone/rclone.conf
-          rclone listremotes
+          rclone_config: ${{ secrets.RCLONE_CONFIG_SERVICE_ACCOUNT_FILE_TEST }}
+          version: ${{ matrix.version }}
+          
+      - name: Add Rclone service account file using setup-rclone/service-account-file
+        uses: AnimMouse/setup-rclone/service-account-file@main
+        with:
+          service_account_filename: setup-rclone-test.json
+          service_account_file: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_FILE }}
+          
+      - name: Test Rclone by listing remotes
+        run: rclone listremotes
+        
+      - name: Test Rclone by listing test remote
 
       # 使用 Rclone 上传文件
-      - name: Upload files to remote
-        run: |
-          rclone sync e3-s: google: --progress
+        run: 'rclone sync e3-s: google: --progress'
