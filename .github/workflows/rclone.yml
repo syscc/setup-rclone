@@ -16,6 +16,6 @@ jobs:
         with:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
           
-      # 使用 Rclone 上传文件
-        run: 'rclone sync e3-s: google: --progress'
+      - name: Sync files using Rclone
+        run: rclone sync e3-s: google: --progress
 
