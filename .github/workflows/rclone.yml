@@ -1,4 +1,4 @@
-name: 
+name: rclone
 
 on:
   workflow_dispatch:
@@ -18,3 +18,4 @@ jobs:
           
       # 使用 Rclone 上传文件
         run: 'rclone sync e3-s: google: --progress'
+
