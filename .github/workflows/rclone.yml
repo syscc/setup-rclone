@@ -1,39 +1,20 @@
-name: Rclone Workflow
+name: 
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # 每天午夜运行
-
-  push:
-    branches:
-      - main  # 触发条件：推送到 main 分支时运行
+  workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        version: [latest, "${{ vars.SPECIFIED_VERSION }}"]
+  BaiduPCS-115:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Setup Rclone using setup-rclone
-        uses: AnimMouse/setup-rclone@main
+      - name: Check out the code
+        uses: actions/checkout@v4
+                
+      - name: Setup Rclone
+        uses: AnimMouse/setup-rclone@v1
         with:
-          rclone_config: ${{ secrets.RCLONE_CONFIG_SERVICE_ACCOUNT_FILE_TEST }}
-          version: ${{ matrix.version }}
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
           
-      - name: Add Rclone service account file using setup-rclone/service-account-file
-        uses: AnimMouse/setup-rclone/service-account-file@main
-        with:
-          service_account_filename: setup-rclone-test.json
-          service_account_file: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_FILE }}
-          
-      - name: Test Rclone by listing remotes
-        run: rclone listremotes
-        
-      - name: Test Rclone by listing test remote
-
       # 使用 Rclone 上传文件
         run: 'rclone sync e3-s: google: --progress'
