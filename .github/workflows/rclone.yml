@@ -1,7 +1,8 @@
 name: rclone
-
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 */7 * *' # 每7天运行一次
 
 jobs:
   rclone:
