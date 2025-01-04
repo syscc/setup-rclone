@@ -1,21 +1,16 @@
-name: rclone
-
-on:
-  workflow_dispatch:
-
 jobs:
-  BaiduPCS-115:
+  sync:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
-                
+
       - name: Setup Rclone
         uses: AnimMouse/setup-rclone@v1
         with:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
-          
-      - name: Sync files using Rclone 
-        run: | 
-          rclone sync e3-s: google: --progress 
+
+      - name: Sync files using Rclone
+        run: |
+          rclone sync e3-s: google: --progress
